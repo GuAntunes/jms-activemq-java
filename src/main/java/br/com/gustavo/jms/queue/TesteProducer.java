@@ -1,4 +1,4 @@
-package br.com.gustavo.jms;
+package br.com.gustavo.jms.queue;
 
 import java.util.Scanner;
 

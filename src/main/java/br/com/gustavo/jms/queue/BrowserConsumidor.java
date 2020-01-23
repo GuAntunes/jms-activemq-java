@@ -1,20 +1,25 @@
-package br.com.gustavo.jms;
+package br.com.gustavo.jms.queue;
 
-import javax.jms.Message;
+import java.util.Enumeration;
+
 import javax.jms.Queue;
+import javax.jms.QueueBrowser;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueReceiver;
 import javax.jms.QueueSession;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 
 /**
  * 
  * @author Gustavo Antunes
- * Criação de um consumidor especifico para uma fila
+ * Dependendo da nossa aplicação, podemos precisar apenas checar (monitoramento) 
+ * as mensagens que chegaram para uma determinada fila sem consumi-la. Ou seja, 
+ * apenas queremos ver sem tirá-las da fila. Para isso podemos usar um componente do JMS 
+ * chamado QueueBrowser, usado para navegar sobre as mensagens sem consumi-las.
  */
-public class QueueReceiverTest {
+public class BrowserConsumidor {
 
 	public static void main(String[] args) throws Exception {
 		
@@ -37,14 +42,13 @@ public class QueueReceiverTest {
 		Queue queue = (Queue) context.lookup("financeiro");
 		
 		//Cria um objeto Receiver capaz de receber efetivamente a mensagem da fila apontada
-		QueueReceiver receiver = session.createReceiver(queue);
+		QueueBrowser browser = session.createBrowser(queue);
 		
-		//Chama o método para reber uma mensagem da fila
-		Message message = receiver.receive();
-		
-		System.out.println(message);
-		
-		
+		Enumeration msgs = browser.getEnumeration();
+		while (msgs.hasMoreElements()) { 
+		    TextMessage msg = (TextMessage) msgs.nextElement(); 
+		    System.out.println("Message: " + msg.getText()); 
+		}
 		connection.close();
 		session.close();
 		context.close();

@@ -1,4 +1,4 @@
-package br.com.gustavo.jms;
+package br.com.gustavo.jms.topic;
 
 import java.util.Scanner;
 
@@ -11,9 +11,10 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.naming.InitialContext;
 
-public class TesteConsumidor {
+public class TesteConsumidorTopic {
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
@@ -22,6 +23,8 @@ public class TesteConsumidor {
 
 		ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
 		Connection connection = factory.createConnection();
+		//Define o client id que será identificado pelo tópico
+		connection.setClientID("estoque");
 		connection.start();
 
 		/*
@@ -34,8 +37,9 @@ public class TesteConsumidor {
 		/*
 		 * Sub Interfaces de Destination: Queue, TemporaryQueue, TemporaryTopic, Topic.
 		 */
-		Destination destination = (Destination) context.lookup("financeiro");
-		MessageConsumer consumer = session.createConsumer(destination);
+		Topic destination = (Topic) context.lookup("loja");
+		//Cria uma assinatura duravel
+		MessageConsumer consumer = session.createDurableSubscriber( destination, "assinatura");
 
 		consumer.setMessageListener(new MessageListener() {
 
