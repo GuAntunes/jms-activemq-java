@@ -1,20 +1,20 @@
-package br.com.gustavo.jms.topic.selector;
+package br.com.gustavo.jms.queue.acknowledge;
 
-import java.io.StringWriter;
+import java.util.Scanner;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.InitialContext;
-import javax.xml.bind.JAXB;
 
-import br.com.gustavo.modelo.Pedido;
-import br.com.gustavo.modelo.PedidoFactory;
-
-public class TesteProducerTopicSelector {
+public class TesteProducer {
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
@@ -35,19 +35,15 @@ public class TesteProducerTopicSelector {
 		/*
 		 * Sub Interfaces de Destination: Queue, TemporaryQueue, TemporaryTopic, Topic.
 		 */
-		Destination destination = (Destination) context.lookup("loja");
+		Destination destination = (Destination) context.lookup("financeiro");
 
 		MessageProducer producer = session.createProducer(destination);
-		Pedido pedido = new PedidoFactory().geraPedidoComValores();
-		
-		StringWriter writer = new StringWriter();
-		JAXB.marshal(pedido, writer);
-		String xml = writer.toString();
-		
-		Message message = session.createTextMessage(xml);
-		//Seta uma propriedade no header do topico para que seja interpretado por um selector
-		message.setBooleanProperty("ebook", false);
+
+		Message message = session.createTextMessage("<id>12345</id>");
 		producer.send(message);
+
+		// Recebe apenas uma mensagem
+//		Message message = consumer.receive();
 
 		session.close();
 		context.close();

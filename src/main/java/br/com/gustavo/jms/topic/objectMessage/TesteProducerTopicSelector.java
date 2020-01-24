@@ -1,4 +1,4 @@
-package br.com.gustavo.jms.topic.selector;
+package br.com.gustavo.jms.topic.objectMessage;
 
 import java.io.StringWriter;
 
@@ -40,11 +40,7 @@ public class TesteProducerTopicSelector {
 		MessageProducer producer = session.createProducer(destination);
 		Pedido pedido = new PedidoFactory().geraPedidoComValores();
 		
-		StringWriter writer = new StringWriter();
-		JAXB.marshal(pedido, writer);
-		String xml = writer.toString();
-		
-		Message message = session.createTextMessage(xml);
+		Message message = session.createObjectMessage(pedido);
 		//Seta uma propriedade no header do topico para que seja interpretado por um selector
 		message.setBooleanProperty("ebook", false);
 		producer.send(message);
